@@ -1,10 +1,22 @@
-import { Box, Container } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
+import { HomeBeneficiosSection } from '../components/home/HomeBeneficiosSection'
+import { HomeCategoriasSection } from '../components/home/HomeCategoriasSection'
+import { HomeFooter } from '../components/home/HomeFooter'
+import { HomeHeroSection } from '../components/home/HomeHeroSection'
+import { HomeNavbar } from '../components/home/HomeNavbar'
+import { HomeProdutosDestaque } from '../components/home/HomeProdutosDestaque'
+
+// ─── Página principal ────────────────────────────────────────────────────────
 
 export const Home = () => {
   return (
-    <Box py={10} minH="calc(100vh - 72px)" bg="gray.100">
-      <Container maxW="6xl">
-      </Container>
+    <Box minH="100vh" bg="white">
+      <HomeNavbar />
+      <HomeHeroSection />
+      <HomeCategoriasSection />
+      <HomeProdutosDestaque />
+      <HomeBeneficiosSection />
+      <HomeFooter />
     </Box>
   )
 }

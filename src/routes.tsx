@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { Login } from './pages/Login'
 import { Home } from './pages/Home'
+import { Login } from './pages/Login'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
@@ -22,17 +22,19 @@ export const AppRoutes = () => {
     <Router>
       <AuthProvider>
         <Routes>
+          {/* Rotas públicas */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
 
+          {/* Rotas protegidas */}
           <Route
-            path="/"
+            path="/app"
             element={
               <ProtectedRoute>
                 <AppLayout />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Home />} />
             <Route path="admin" element={<Admin />} />
             <Route path="estoque" element={<Estoque />} />
             <Route path="estoque/parametrizacoes" element={<EstoqueParametrizacoes />} />
@@ -41,12 +43,10 @@ export const AppRoutes = () => {
             <Route path="gestao-arquivos" element={<GestaoArquivos />} />
             <Route path="perfil" element={<Perfil />} />
             <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="produtos" element={<Produtos />} />
           </Route>
 
-          <Route path="produtos" element={<Produtos />} />
-
-          {/* Redirecionar qualquer rota não encontrada para login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </Router>
