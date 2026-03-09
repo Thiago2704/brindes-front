@@ -1,10 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { Login } from './pages/Login'
 import { Home } from './pages/Home'
+import { ProdutoDetalhe } from './pages/ProdutoDetalhe'
+import { Login } from './pages/Login'
+import { Register } from './pages/Register'
+import { MeuPerfil } from './pages/MeuPerfil'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
 import { Produtos } from './pages/Produtos'
+import { PortalInterno } from './pages/PortalInterno'
 
 import { AppLayout } from './pages/AppLayout'
 import { Admin } from './pages/Admin'
@@ -22,8 +26,21 @@ export const AppRoutes = () => {
     <Router>
       <AuthProvider>
         <Routes>
+          {/* Rotas públicas */}
+          <Route path="/" element={<Home />} />
+          <Route path="/produto/:id" element={<ProdutoDetalhe />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Register />} />
+          <Route
+            path="/meu-perfil"
+            element={
+              <ProtectedRoute allowCliente>
+                <MeuPerfil />
+              </ProtectedRoute>
+            }
+          />
 
+          {/* Rotas protegidas */}
           <Route
             path="/"
             element={
@@ -32,7 +49,7 @@ export const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Home />} />
+            <Route path="portal-interno" element={<PortalInterno />} />
             <Route path="admin" element={<Admin />} />
             <Route path="estoque" element={<Estoque />} />
             <Route path="estoque/parametrizacoes" element={<EstoqueParametrizacoes />} />
@@ -42,7 +59,9 @@ export const AppRoutes = () => {
             <Route path="gestao-arquivos" element={<GestaoArquivos />} />
             <Route path="perfil" element={<Perfil />} />
             <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="produtos" element={<Produtos />} />
           </Route>
+
 
           {/* Redirecionar qualquer rota não encontrada para login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
