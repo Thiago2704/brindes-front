@@ -1,10 +1,15 @@
-const RAW_API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const RAW_API_BASE_URL: string | undefined = import.meta.env.VITE_API_BASE_URL
 
 if (!RAW_API_BASE_URL) {
-  throw new Error('A variável VITE_API_BASE_URL deve ser definida no arquivo .env')
+  console.error(
+    '[api.ts] ⚠️  VITE_API_BASE_URL não está definida.\n' +
+    'Crie o arquivo brindes-front/.env com o conteúdo:\n' +
+    'VITE_API_BASE_URL=http://localhost:8080\n' +
+    'e reinicie o servidor de desenvolvimento.'
+  )
 }
 
-export const API_BASE_URL = RAW_API_BASE_URL.replace(/\/$/, '')
+export const API_BASE_URL = (RAW_API_BASE_URL ?? '').replace(/\/$/, '')
 
 export const apiUrl = (path: string) => `${API_BASE_URL}${path}`
 
@@ -26,5 +31,7 @@ export const API_ENDPOINTS = {
     unidades: '/api/estoque/unidades',
   },
   produtos: '/api/produtos',
+  orcamentos: '/api/orcamentos',
+  clientes: '/api/clientes',
 }
 

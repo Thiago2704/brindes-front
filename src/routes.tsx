@@ -6,6 +6,8 @@ import { Register } from './pages/Register'
 import { MeuPerfil } from './pages/MeuPerfil'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
+import { CarrinhoPage } from './pages/CarrinhoPage'
 
 import { Produtos } from './pages/Produtos'
 import { PortalInterno } from './pages/PortalInterno'
@@ -19,18 +21,38 @@ import { GestaoArquivos } from './pages/GestaoArquivos'
 import { Perfil } from './pages/Perfil'
 import { Configuracoes } from './pages/Configuracoes'
 import { EstoqueParametrizacoes } from './pages/EstoqueParametrizacoes'
+import { MeusOrcamentos } from './pages/MeusOrcamentos'
+import { OrcamentoDetalhe } from './pages/OrcamentoDetalhe'
 
 
 export const AppRoutes = () => {
   return (
     <Router>
       <AuthProvider>
+        <CartProvider>
         <Routes>
           {/* Rotas públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+          <Route path="/carrinho" element={<CarrinhoPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Register />} />
+          <Route
+            path="/meus-orcamentos"
+            element={
+              <ProtectedRoute allowCliente>
+                <MeusOrcamentos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/meus-orcamentos/:id"
+            element={
+              <ProtectedRoute allowCliente>
+                <OrcamentoDetalhe />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/meu-perfil"
             element={
@@ -66,6 +88,7 @@ export const AppRoutes = () => {
           {/* Redirecionar qualquer rota não encontrada para login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        </CartProvider>
       </AuthProvider>
     </Router>
   )

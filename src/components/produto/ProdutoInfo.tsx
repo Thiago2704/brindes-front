@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 import { StarRating } from './StarRating'
 import type { ProdutoDetalhe } from './produtoData'
+import { useCart } from '../../context/useCart'
 
 type Props = {
   produto: ProdutoDetalhe
@@ -9,7 +11,10 @@ type Props = {
 
 export const ProdutoInfo = ({ produto }: Props) => {
   const [corSelecionada, setCorSelecionada] = useState(produto.cores[0])
+  const [impressaoSelecionada, setImpressaoSelecionada] = useState(produto.impressoes[0])
   const [quantidade, setQuantidade] = useState(produto.minimoUnidades)
+  const { addToCart } = useCart()
+  const navigate = useNavigate()
 
   const total = (produto.preco * quantidade).toFixed(2).replace('.', ',')
   const precoFormatado = produto.preco.toFixed(2).replace('.', ',')
@@ -18,6 +23,21 @@ export const ProdutoInfo = ({ produto }: Props) => {
     if (quantidade > produto.minimoUnidades) setQuantidade((q) => q - 1)
   }
   const incrementar = () => setQuantidade((q) => q + 1)
+
+  const handleAdicionarAoCarrinho = () => {
+    addToCart({
+      produtoId: produto.id,
+      nome: produto.nome,
+      categoria: produto.categoria,
+      preco: produto.preco,
+      cor: corSelecionada,
+      impressao: impressaoSelecionada,
+      quantidade,
+      imagem: produto.imagens[0],
+      minimoUnidades: produto.minimoUnidades,
+    })
+    navigate('/carrinho')
+  }
 
   return (
     <VStack align="start" gap={5}>
@@ -74,6 +94,33 @@ export const ProdutoInfo = ({ produto }: Props) => {
               onClick={() => setCorSelecionada(cor)}
             >
               {cor}
+            </Button>
+          ))}
+        </HStack>
+      </VStack>
+
+      {/* Seletor de impressão */}
+      <VStack align="start" gap={2}>
+        <Text fontSize="sm" fontWeight="600" color="#1a1616">
+          Impressão: <Text as="span" fontWeight="400">{impressaoSelecionada}</Text>
+        </Text>
+        <HStack gap={2} flexWrap="wrap">
+          {produto.impressoes.map((imp) => (
+            <Button
+              key={imp}
+              size="sm"
+              px={4}
+              borderRadius="md"
+              fontWeight="500"
+              fontSize="sm"
+              bg={impressaoSelecionada === imp ? '#1a1616' : 'white'}
+              color={impressaoSelecionada === imp ? 'white' : '#1a1616'}
+              border="1px solid"
+              borderColor={impressaoSelecionada === imp ? '#1a1616' : 'gray.300'}
+              _hover={{ borderColor: '#1a1616' }}
+              onClick={() => setImpressaoSelecionada(imp)}
+            >
+              {imp}
             </Button>
           ))}
         </HStack>
@@ -140,6 +187,7 @@ export const ProdutoInfo = ({ produto }: Props) => {
           py={6}
           borderRadius="md"
           _hover={{ bg: '#111111' }}
+          onClick={handleAdicionarAoCarrinho}
         >
           🛒&nbsp; Solicitar Orçamento
         </Button>

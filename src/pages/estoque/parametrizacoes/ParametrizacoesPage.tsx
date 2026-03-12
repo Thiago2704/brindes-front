@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Box, Button, Container, Flex, HStack, Heading, Stack, Text } from '@chakra-ui/react'
 import { SearchInput, SelectLike } from '../components'
-import { FornecedoresTable, LocaisEstoqueTable, MateriasPrimasTable, TabsHeader } from './components'
+import { CategoriasTable, FornecedoresTable, LocaisEstoqueTable, MateriasPrimasTable, TabsHeader } from './components'
 import { useAuth } from '../../../context/useAuth'
 import { fornecedorService } from '../../../services/parametrizacoes/fornecedorService'
 import { materiaPrimaService } from '../../../services/parametrizacoes/materiaPrimaService'
@@ -10,13 +10,15 @@ import { categoriaService } from '../../../services/parametrizacoes/categoriaSer
 import { unidadeService } from '../../../services/parametrizacoes/unidadeService'
 import type { ParamTabKey } from './types'
 import type { CategoriaResponse } from '../../../types/estoqueServiceTypes'
-import type { FornecedorRow, LocalEstoqueRow, MateriaPrimaRow, StatusAtivo } from './types'
+import type { CategoriaRow, FornecedorRow, LocalEstoqueRow, MateriaPrimaRow, StatusAtivo } from './types'
 import { AppBreadcrumbs } from '../../../components/AppBreadcrumbs'
 import {
+  CategoriaUpsertDialog,
   ConfirmDeleteDialog,
   FornecedorUpsertDialog,
   LocalEstoqueUpsertDialog,
   MateriaPrimaUpsertDialog,
+  type CategoriaFormValues,
   type FornecedorFormValues,
   type LocalEstoqueFormValues,
   type MateriaPrimaFormValues,
@@ -26,6 +28,7 @@ const createButtonLabel: Record<ParamTabKey, string> = {
   fornecedores: 'Cadastrar Fornecedor',
   'materias-primas': 'Cadastrar Matéria-Prima',
   locais: 'Cadastrar Local de Estoque',
+  categorias: 'Cadastrar Categoria',
 }
 
 export const ParametrizacoesPage = () => {
@@ -42,6 +45,7 @@ export const ParametrizacoesPage = () => {
   const [fornecedores, setFornecedores] = useState<FornecedorRow[]>([])
   const [materias, setMaterias] = useState<MateriaPrimaRow[]>([])
   const [locais, setLocais] = useState<LocalEstoqueRow[]>([])
+  const [categoriasRows, setCategoriasRows] = useState<CategoriaRow[]>([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -69,6 +73,12 @@ export const ParametrizacoesPage = () => {
   const [fornecedoresAtivos, setFornecedoresAtivos] = useState<{ id: number; nome: string }[]>([])
   const [locaisEstoqueOptions, setLocaisEstoqueOptions] = useState<{ id: number; nome: string }[]>([])
 
+  const [categoriaDialogOpen, setCategoriaDialogOpen] = useState(false)
+  const [categoriaDialogMode, setCategoriaDialogMode] = useState<'create' | 'edit'>('create')
+  const [categoriaEditing, setCategoriaEditing] = useState<CategoriaRow | null>(null)
+  const [categoriaSubmitting, setCategoriaSubmitting] = useState(false)
+  const [categoriaError, setCategoriaError] = useState<string | null>(null)
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteSubmitting, setDeleteSubmitting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -76,6 +86,7 @@ export const ParametrizacoesPage = () => {
     | { type: 'fornecedor'; row: FornecedorRow }
     | { type: 'local'; row: LocalEstoqueRow }
     | { type: 'materia'; row: MateriaPrimaRow }
+    | { type: 'categoria'; row: CategoriaRow }
     | null
   >(null)
 
@@ -149,14 +160,21 @@ export const ParametrizacoesPage = () => {
           return
         }
 
-        const page = await localEstoqueService.getLocaisEstoque({ search, page: 1, pageSize: 50 }, token, controller.signal)
-        setLocais(
-          (page.items ?? []).map((l) => ({
-            id: l.id,
-            nome: l.nome,
-            descricao: l.descricao,
-          }))
-        )
+        if (tab === 'locais') {
+          const page = await localEstoqueService.getLocaisEstoque({ search, page: 1, pageSize: 50 }, token, controller.signal)
+          setLocais(
+            (page.items ?? []).map((l) => ({
+              id: l.id,
+              nome: l.nome,
+              descricao: l.descricao,
+            }))
+          )
+          return
+        }
+
+        // tab === 'categorias'
+        const cats = await categoriaService.getCategorias(token, controller.signal)
+        setCategoriasRows(cats.map((c) => ({ id: c.id, nome: c.nome })))
       }
 
       run()
@@ -226,6 +244,7 @@ export const ParametrizacoesPage = () => {
       )
     }
 
+    // tab === 'categorias' ou 'locais'
     return <SearchInput value={search} placeholder="Buscar" onChange={setSearch} minW="220px" />
   }
 
@@ -266,17 +285,35 @@ export const ParametrizacoesPage = () => {
         />
       )
     }
+    if (tab === 'locais') {
+      return (
+        <LocaisEstoqueTable
+          rows={locais}
+          onEdit={(row) => {
+            setLocalEditing(row)
+            setLocalDialogMode('edit')
+            setLocalError(null)
+            setLocalDialogOpen(true)
+          }}
+          onDelete={(row) => {
+            setDeleteTarget({ type: 'local', row })
+            setDeleteError(null)
+            setDeleteDialogOpen(true)
+          }}
+        />
+      )
+    }
     return (
-      <LocaisEstoqueTable
-        rows={locais}
+      <CategoriasTable
+        rows={categoriasRows}
         onEdit={(row) => {
-          setLocalEditing(row)
-          setLocalDialogMode('edit')
-          setLocalError(null)
-          setLocalDialogOpen(true)
+          setCategoriaEditing(row)
+          setCategoriaDialogMode('edit')
+          setCategoriaError(null)
+          setCategoriaDialogOpen(true)
         }}
         onDelete={(row) => {
-          setDeleteTarget({ type: 'local', row })
+          setDeleteTarget({ type: 'categoria', row })
           setDeleteError(null)
           setDeleteDialogOpen(true)
         }}
@@ -299,10 +336,17 @@ export const ParametrizacoesPage = () => {
       setMateriaDialogOpen(true)
       return
     }
-    setLocalEditing(null)
-    setLocalDialogMode('create')
-    setLocalError(null)
-    setLocalDialogOpen(true)
+    if (tab === 'locais') {
+      setLocalEditing(null)
+      setLocalDialogMode('create')
+      setLocalError(null)
+      setLocalDialogOpen(true)
+      return
+    }
+    setCategoriaEditing(null)
+    setCategoriaDialogMode('create')
+    setCategoriaError(null)
+    setCategoriaDialogOpen(true)
   }
 
   return (
@@ -495,6 +539,32 @@ export const ParametrizacoesPage = () => {
           }}
         />
 
+        <CategoriaUpsertDialog
+          open={categoriaDialogOpen}
+          mode={categoriaDialogMode}
+          submitting={categoriaSubmitting}
+          error={categoriaError}
+          initialValues={categoriaEditing ? { nome: categoriaEditing.nome } : undefined}
+          onClose={() => setCategoriaDialogOpen(false)}
+          onSubmit={(values: CategoriaFormValues) => {
+            setCategoriaSubmitting(true)
+            setCategoriaError(null)
+
+            const run =
+              categoriaDialogMode === 'create'
+                ? categoriaService.createCategoria({ nome: values.nome }, token)
+                : categoriaService.updateCategoria(categoriaEditing?.id ?? 0, { nome: values.nome }, token)
+
+            run
+              .then(() => {
+                setCategoriaDialogOpen(false)
+                setReloadKey((k) => k + 1)
+              })
+              .catch((e) => setCategoriaError(e instanceof Error ? e.message : 'Erro ao salvar categoria'))
+              .finally(() => setCategoriaSubmitting(false))
+          }}
+        />
+
         <ConfirmDeleteDialog
           open={deleteDialogOpen}
           submitting={deleteSubmitting}
@@ -504,16 +574,20 @@ export const ParametrizacoesPage = () => {
               ? 'Excluir fornecedor'
               : deleteTarget?.type === 'local'
                 ? 'Excluir local de estoque'
-                : 'Excluir matéria-prima'
+                : deleteTarget?.type === 'categoria'
+                  ? 'Excluir categoria'
+                  : 'Excluir matéria-prima'
           }
           description={
             deleteTarget?.type === 'fornecedor'
               ? `Tem certeza que deseja excluir o fornecedor "${deleteTarget.row.nome}"?`
               : deleteTarget?.type === 'local'
                 ? `Tem certeza que deseja excluir o local "${deleteTarget.row.nome}"?`
-                : deleteTarget
-                  ? `Tem certeza que deseja excluir a matéria-prima "${deleteTarget.row.descricao}"?`
-                  : ''
+                : deleteTarget?.type === 'categoria'
+                  ? `Tem certeza que deseja excluir a categoria "${deleteTarget.row.nome}"?`
+                  : deleteTarget
+                    ? `Tem certeza que deseja excluir a matéria-prima "${(deleteTarget.row as MateriaPrimaRow).descricao}"?`
+                    : ''
           }
           onClose={() => {
             setDeleteDialogOpen(false)
@@ -529,7 +603,9 @@ export const ParametrizacoesPage = () => {
                 ? fornecedorService.deleteFornecedor(deleteTarget.row.id, token)
                 : deleteTarget.type === 'local'
                   ? localEstoqueService.deleteLocalEstoque(deleteTarget.row.id, token)
-                  : materiaPrimaService.deleteMateriaPrima(deleteTarget.row.id, token)
+                  : deleteTarget.type === 'categoria'
+                    ? categoriaService.deleteCategoria(deleteTarget.row.id, token)
+                    : materiaPrimaService.deleteMateriaPrima(deleteTarget.row.id, token)
 
             run
               .then(() => {

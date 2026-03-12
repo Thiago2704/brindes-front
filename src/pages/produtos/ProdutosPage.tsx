@@ -3,7 +3,7 @@ import { Box, Button, Container, Flex, HStack, Heading, Stack, Text, SimpleGrid 
 import { SectionCard, SearchInput, SelectLike } from '../estoque/components'
 import { AppBreadcrumbs } from '../../components/AppBreadcrumbs'
 
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 import { produtoService } from '../../services/produtoService'
 import type { ProdutoResponse, ProdutoRequest } from '../../services/produtoService'
 import { formatBRL, formatInt } from '../estoque/format'

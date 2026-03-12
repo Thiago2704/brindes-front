@@ -3,6 +3,17 @@ import { authHeaders, getJsonOrThrow, toQueryString } from './http'
 
 /* ── Types ───────────────────────────────────────────────── */
 
+export interface ProdutoImagemResponse {
+    id: number
+    url: string
+    ordem: number
+}
+
+export interface ProdutoImagemRequest {
+    url: string
+    ordem?: number
+}
+
 export interface ItemFichaTecnicaResponse {
     id: number
     materiaPrimaId: number
@@ -28,6 +39,7 @@ export interface ProdutoResponse {
     prazoProducao: string | null
     observacoes: string | null
     itensFichaTecnica: ItemFichaTecnicaResponse[]
+    imagens: ProdutoImagemResponse[]
 }
 
 export interface PageResponse<T> {
@@ -56,6 +68,8 @@ export interface ProdutoRequest {
     prazoProducao?: string
     observacoes?: string
     itensFichaTecnica: ItemFichaTecnicaRequest[]
+    /** Mínimo 1, máximo 4. A de menor ordem é a capa. */
+    imagens: ProdutoImagemRequest[]
 }
 
 /* ── Service ─────────────────────────────────────────────── */

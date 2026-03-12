@@ -19,6 +19,7 @@ export type ProdutoDetalhe = {
   totalAvaliacoes: number
   descricao: string
   cores: string[]
+  impressoes: string[]
   caracteristicas: string[]
   imagens: string[]
   avaliacoes: ProdutoAvaliacao[]
@@ -64,6 +65,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 98,
     descricao: 'Caneca de cerâmica resistente com impressão de alta qualidade. Suporta lava-louças e micro-ondas. Ideal para brindes corporativos e presentes personalizados.',
     cores: ['Branco', 'Preto', 'Azul'],
+    impressoes: ['Silk', 'Digital', 'Transfer'],
     caracteristicas: [
       'Cerâmica resistente',
       'Capacidade 325ml',
@@ -91,6 +93,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 74,
     descricao: 'Sacola ecológica em algodão cru com alças reforçadas. Sustentável e durável, ideal para feiras, eventos e brindes corporativos.',
     cores: ['Natural', 'Preto', 'Verde'],
+    impressoes: ['Serigrafia', 'Bordado', 'Transfer'],
     caracteristicas: [
       'Algodão cru 180g/m²',
       'Alças reforçadas',
@@ -118,6 +121,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 56,
     descricao: 'Kit completo para escritório com caneta, bloco e porta-caneta personalizados. Apresentação elegante em caixa personalizada.',
     cores: ['Preto', 'Azul', 'Cinza'],
+    impressoes: ['Gravação Laser', 'Serigrafia', 'Silk'],
     caracteristicas: [
       'Caneta esferográfica metal',
       'Bloco 50 folhas',
@@ -145,6 +149,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 112,
     descricao: 'Camiseta 100% algodão fio 30 com silk screen de alta qualidade. Disponível em vários tamanhos e cores. Ideal para eventos e uniformes.',
     cores: ['Branco', 'Preto', 'Cinza', 'Azul Marinho'],
+    impressoes: ['Silk', 'Bordado', 'Sublimação'],
     caracteristicas: [
       'Algodão 100% fio 30',
       'Silk screen frente e costas',
@@ -172,6 +177,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 89,
     descricao: 'Garrafa térmica inox de alto padrão com isolamento a vácuo. Mantém bebidas quentes por 12h e frias por 24h. Perfeita para brindes premium.',
     cores: ['Prata', 'Preto', 'Azul'],
+    impressoes: ['Gravação Laser', 'Silk', 'Digital'],
     caracteristicas: [
       'Aço inox dupla parede',
       'Isolamento a vácuo',
@@ -199,6 +205,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 67,
     descricao: 'Boné aba curva em tecido de nylon com bordado de alta definição. Ajuste em velcro. Ideal para uniformes, eventos e brindes.',
     cores: ['Preto', 'Branco', 'Azul Marinho', 'Vermelho'],
+    impressoes: ['Bordado', 'Silk', 'Transfer'],
     caracteristicas: [
       'Tecido nylon resistente',
       'Bordado computadorizado',
@@ -226,6 +233,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 127,
     descricao: 'Kit executivo de luxo com múltiplos itens premium. Apresentação impecável em estojo personalizado. Ideal para clientes VIP.',
     cores: ['Preto', 'Prata', 'Dourado'],
+    impressoes: ['Gravação Laser', 'Serigrafia', 'Bordado'],
     caracteristicas: [
       'Caneta metal executiva',
       'Caderno premium capa couro',
@@ -253,6 +261,7 @@ export const PRODUTOS_DETALHE: ProdutoDetalhe[] = [
     totalAvaliacoes: 43,
     descricao: 'Conjunto de materiais promocionais para divulgação da sua marca. Canetas, panfletos e adesivos personalizados com a identidade visual da empresa.',
     cores: ['Personalizado'],
+    impressoes: ['Silk', 'Digital', 'Offset'],
     caracteristicas: [
       'Canetas esferográficas',
       'Panfletos couchê 150g',

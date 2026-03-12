@@ -19,7 +19,7 @@ export type HomeBeneficio = {
   icon: ReactNode
 }
 
-export const HOME_NAV_LINKS = ['Início', 'Produtos', 'Categorias', 'Sobre', 'Contato']
+export const HOME_NAV_LINKS = ['Início', 'Produtos', 'Meus Orçamentos', 'Contato']
 
 export const HOME_FOOTER_LINKS = ['Sobre Nós', 'Produtos', 'Catálogo', 'Blog', 'Contato']
 
