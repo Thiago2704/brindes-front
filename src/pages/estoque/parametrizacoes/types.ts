@@ -1,4 +1,4 @@
-export type ParamTabKey = 'fornecedores' | 'materias-primas' | 'locais'
+export type ParamTabKey = 'fornecedores' | 'materias-primas' | 'locais' | 'categorias'
 
 export type StatusAtivo = 'ATIVO' | 'INATIVO'
 
@@ -38,3 +38,7 @@ export interface LocalEstoqueRow {
   descricao: string
 }
 
+export interface CategoriaRow {
+  id: number
+  nome: string
+}

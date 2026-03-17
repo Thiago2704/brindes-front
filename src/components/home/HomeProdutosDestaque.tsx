@@ -8,9 +8,11 @@ import { produtoService, type ProdutoResponse } from '../../services/produtoServ
 // 2. Atualizar as Props do Card para receber a resposta real do backend
 const ProdutoCard = ({ produto }: { produto: ProdutoResponse }) => {
   const navigate = useNavigate()
-  
-  // Como o teu DTO do backend ainda não tem um campo de imagem, usamos um placeholder
-  const imgPlaceholder = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=500&q=80'
+
+  const imgSrc =
+    produto.imagens && produto.imagens.length > 0
+      ? produto.imagens[0].url
+      : 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=500&q=80'
 
   // Formatar o preço para Reais (BRL)
   const precoFormatado = produto.precoVenda
@@ -30,7 +32,7 @@ const ProdutoCard = ({ produto }: { produto: ProdutoResponse }) => {
     >
       <Box h="180px" overflow="hidden">
         <img
-          src={imgPlaceholder}
+          src={imgSrc}
           alt={produto.nome}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />

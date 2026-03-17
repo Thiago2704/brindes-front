@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react'
-import { Box, Button, Container, HStack, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Container, HStack, Image, Text, VStack } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import logoBahiaBrindes from '../../assets/logo-bahia-brindes.svg'
 import { useAuth } from '../../context/useAuth'
+import { useCart } from '../../context/useCart'
 import { useOutsideDismiss } from '../useOutsideDismiss'
 import { HOME_NAV_LINKS } from './homeData'
 
 export const HomeNavbar = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { cartCount } = useCart()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement | null>(null)
 
@@ -32,30 +35,61 @@ export const HomeNavbar = () => {
       <Container maxW="7xl">
         <HStack justify="space-between" py={3}>
           <HStack gap={10}>
-            <Text
-              fontFamily="'Dancing Script', 'Brush Script MT', cursive"
-              fontSize="2xl"
-              fontWeight="700"
-              color="#1a1616"
-              letterSpacing="tight"
-              whiteSpace="nowrap"
+            <Box
+              as="button"
+              onClick={() => navigate('/')}
+              cursor="pointer"
+              display="flex"
+              alignItems="center"
+              border="none"
+              bg="transparent"
+              p={0}
+              _hover={{ opacity: 0.85 }}
+              transition="opacity 0.15s"
+              aria-label="Ir para a página inicial"
             >
-              Bahia&nbsp;Brindes
-            </Text>
+              <Image src={logoBahiaBrindes} alt="Bahia Brindes" h={{ base: '28px', md: '32px' }} />
+            </Box>
 
             <HStack gap={7} display={{ base: 'none', md: 'flex' }}>
-              {HOME_NAV_LINKS.map((item) => (
-                <Text
-                  key={item}
-                  fontSize="sm"
-                  fontWeight="500"
-                  color="gray.700"
-                  cursor="pointer"
-                  _hover={{ color: '#1a1616' }}
-                >
-                  {item}
-                </Text>
-              ))}
+              {HOME_NAV_LINKS.map((item) => {
+                const handleClick = () => {
+                  if (item === 'Início') {
+                    navigate('/')
+                    return
+                  }
+                  if (item === 'Produtos') {
+                    navigate('/produtos')
+                    return
+                  }
+                  if (item === 'Meus Orçamentos') {
+                    navigate('/meus-orcamentos')
+                    return
+                  }
+                  if (item === 'Contato') {
+                    const phone = '558781440072'
+                    const message =
+                      'Olá, acessei o site da Bahia Brindes e gostaria de falar com um responsável.'
+                    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+                    window.open(url, '_blank')
+                    return
+                  }
+                }
+
+                return (
+                  <Text
+                    key={item}
+                    fontSize="sm"
+                    fontWeight="500"
+                    color="gray.700"
+                    cursor="pointer"
+                    _hover={{ color: '#1a1616' }}
+                    onClick={handleClick}
+                  >
+                    {item}
+                  </Text>
+                )
+              })}
             </HStack>
           </HStack>
 
@@ -156,29 +190,39 @@ export const HomeNavbar = () => {
                 </Box>
               ) : null}
             </Box>
-            <Box as="button" position="relative" color="gray.600" _hover={{ color: '#1a1616' }}>
+            <Box
+              as="button"
+              position="relative"
+              color="gray.600"
+              _hover={{ color: '#1a1616' }}
+              onClick={() => navigate('/carrinho')}
+              aria-label="Carrinho de orçamento"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
-              <Box
-                position="absolute"
-                top="-6px"
-                right="-6px"
-                bg="#1a1616"
-                color="white"
-                borderRadius="full"
-                w="16px"
-                h="16px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                fontSize="9px"
-                fontWeight="700"
-              >
-                1
-              </Box>
+              {cartCount > 0 && (
+                <Box
+                  position="absolute"
+                  top="-6px"
+                  right="-6px"
+                  bg="#1a1616"
+                  color="white"
+                  borderRadius="full"
+                  minW="16px"
+                  h="16px"
+                  px="3px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  fontSize="9px"
+                  fontWeight="700"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </Box>
+              )}
             </Box>
           </HStack>
         </HStack>

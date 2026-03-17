@@ -656,6 +656,86 @@ export const MateriaPrimaUpsertDialog = ({
   )
 }
 
+export type CategoriaFormValues = {
+  nome: string
+}
+
+export const CategoriaUpsertDialog = ({
+  open,
+  mode,
+  initialValues,
+  submitting,
+  error,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean
+  mode: 'create' | 'edit'
+  initialValues?: Partial<CategoriaFormValues>
+  submitting?: boolean
+  error?: string | null
+  onClose: () => void
+  onSubmit: (values: CategoriaFormValues) => void
+}) => {
+  const [values, setValues] = useState<CategoriaFormValues>({ nome: '' })
+
+  useEffect(() => {
+    if (!open) return
+    setValues({ nome: initialValues?.nome ?? '' })
+  }, [initialValues, open])
+
+  const canSubmit = values.nome.trim().length > 0
+
+  return (
+    <DialogRoot open={open} onOpenChange={(e) => (!e.open ? onClose() : null)}>
+      <DialogBackdrop />
+      <DialogPositioner>
+        <DialogContent maxW="480px">
+          <DialogCloseTrigger />
+          <DialogHeader>
+            <DialogTitle>{mode === 'create' ? 'Cadastrar Categoria' : 'Editar Categoria'}</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            {error ? (
+              <Text mb={3} fontSize="sm" color="red.500">
+                {error}
+              </Text>
+            ) : null}
+
+            <Stack gap={4}>
+              <Stack gap={2}>
+                <FieldLabel>Nome *</FieldLabel>
+                <Input
+                  value={values.nome}
+                  onChange={(e) => setValues({ nome: e.target.value })}
+                  placeholder="Ex: Canetas, Camisetas, Brindes..."
+                  bg="white"
+                />
+              </Stack>
+            </Stack>
+          </DialogBody>
+          <DialogFooter>
+            <HStack justify="flex-end" gap={3} w="full">
+              <Button variant="outline" onClick={onClose} disabled={Boolean(submitting)}>
+                Cancelar
+              </Button>
+              <Button
+                bg="blue.600"
+                color="white"
+                _hover={{ bg: 'blue.700' }}
+                onClick={() => onSubmit(values)}
+                disabled={!canSubmit || Boolean(submitting)}
+              >
+                {mode === 'create' ? 'Cadastrar' : 'Salvar'}
+              </Button>
+            </HStack>
+          </DialogFooter>
+        </DialogContent>
+      </DialogPositioner>
+    </DialogRoot>
+  )
+}
+
 export const ConfirmDeleteDialog = ({
   open,
   title,

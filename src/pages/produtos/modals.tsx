@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { useAuth } from '../../context/useAuth'
 import { materiaPrimaService } from '../../services/parametrizacoes/materiaPrimaService'
-import type { ProdutoRequest } from '../../services/produtoService'
+import type { ProdutoImagemRequest, ProdutoRequest } from '../../services/produtoService'
 
 const FieldLabel = ({ children }: { children: string }) => (
   <Text as="label" fontSize="sm" color="gray.700" fontWeight="600">
@@ -53,6 +53,8 @@ export const ProdutoUpsertDialog = ({
   const [condicoesPagamento, setCondicoesPagamento] = useState('')
   const [prazoProducao, setPrazoProducao] = useState('')
   const [observacoes, setObservacoes] = useState('')
+  // Imagens: até 4 URLs; a primeira (índice 0) é a capa
+  const [imagens, setImagens] = useState<string[]>(['', '', '', ''])
 
   const [materiasOptions, setMateriasOptions] = useState<{ id: number; descricao: string }[]>([])
   const [selectedMateriaId, setSelectedMateriaId] = useState<string>('')
@@ -89,6 +91,7 @@ export const ProdutoUpsertDialog = ({
       setPrazoProducao('')
       setObservacoes('')
       setSelectedMateriaId('')
+      setImagens(['', '', '', ''])
     }, 0)
 
     return () => clearTimeout(t)
@@ -112,6 +115,8 @@ export const ProdutoUpsertDialog = ({
     setMaterias((s) => s.filter((m) => m.id !== id))
   }
 
+  const imagensValidas = imagens.filter((url) => url.trim() !== '')
+
   const canSubmit =
     nome.trim() &&
     descricao.trim() &&
@@ -119,9 +124,15 @@ export const ProdutoUpsertDialog = ({
     status.trim() &&
     prazoProducao.trim() &&
     materias.length > 0 &&
-    materias.every((m) => m.quantidade && Number(m.quantidade) > 0)
+    materias.every((m) => m.quantidade && Number(m.quantidade) > 0) &&
+    imagensValidas.length >= 1
 
   const handleSubmit = () => {
+    const imagensPayload: ProdutoImagemRequest[] = imagensValidas.map((url, idx) => ({
+      url: url.trim(),
+      ordem: idx + 1,
+    }))
+
     const data: ProdutoRequest = {
       nome: nome.trim(),
       descricao: descricao.trim(),
@@ -134,6 +145,7 @@ export const ProdutoUpsertDialog = ({
         materiaPrimaId: m.id,
         quantidadeNecessaria: Number(m.quantidade),
       })),
+      imagens: imagensPayload,
     }
     onSubmit(data)
   }
@@ -265,6 +277,73 @@ export const ProdutoUpsertDialog = ({
                     ))
                   )}
                 </Stack>
+              </Stack>
+
+              <Box h="1px" bg="gray.100" />
+
+              {/* Imagens */}
+              <Text fontSize="sm" fontWeight="700" color="gray.800">
+                Imagens do Produto
+              </Text>
+              <Text fontSize="xs" color="gray.500">
+                Informe as URLs das imagens (mínimo 1, máximo 4). A primeira será usada como capa.
+              </Text>
+
+              <Stack gap={3}>
+                {imagens.map((url, idx) => (
+                  <Stack key={idx} gap={1}>
+                    <HStack gap={2} align="center">
+                      <Box
+                        w="28px"
+                        h="28px"
+                        borderRadius="full"
+                        bg={idx === 0 ? 'gray.900' : 'gray.200'}
+                        color={idx === 0 ? 'white' : 'gray.600'}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontSize="xs"
+                        fontWeight="700"
+                        flexShrink={0}
+                      >
+                        {idx + 1}
+                      </Box>
+                      <Input
+                        value={url}
+                        onChange={(e) => {
+                          const next = [...imagens]
+                          next[idx] = e.target.value
+                          setImagens(next)
+                        }}
+                        placeholder={
+                          idx === 0
+                            ? 'URL da imagem capa (obrigatória)'
+                            : `URL da imagem ${idx + 1} (opcional)`
+                        }
+                        bg="white"
+                        size="sm"
+                      />
+                    </HStack>
+                    {url.trim() && (
+                      <Box pl="36px">
+                        <img
+                          src={url.trim()}
+                          alt={`Prévia ${idx + 1}`}
+                          style={{
+                            width: '80px',
+                            height: '60px',
+                            objectFit: 'cover',
+                            borderRadius: '6px',
+                            border: '1px solid #E2E8F0',
+                          }}
+                          onError={(e) => {
+                            ;(e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                      </Box>
+                    )}
+                  </Stack>
+                ))}
               </Stack>
 
               <Box h="1px" bg="gray.100" />

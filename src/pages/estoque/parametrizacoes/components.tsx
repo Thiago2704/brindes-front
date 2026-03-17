@@ -3,12 +3,13 @@ import { Box, Button, Flex, MenuContent, MenuItem, MenuRoot, MenuTrigger } from 
 import { PencilIcon } from '../../../components/icons'
 import { SimpleTable } from '../components'
 import { formatInt } from '../format'
-import type { FornecedorRow, LocalEstoqueRow, MateriaPrimaRow, ParamTabKey, StatusAtivo } from './types'
+import type { CategoriaRow, FornecedorRow, LocalEstoqueRow, MateriaPrimaRow, ParamTabKey, StatusAtivo } from './types'
 
 const tabLabel: Record<ParamTabKey, string> = {
   fornecedores: 'FORNECEDORES',
   'materias-primas': 'MATÉRIAS-PRIMAS',
   locais: 'LOCAIS DE ESTOQUE',
+  categorias: 'CATEGORIAS',
 }
 
 export const TabsHeader = ({ value, onChange }: { value: ParamTabKey; onChange: (next: ParamTabKey) => void }) => {
@@ -285,3 +286,52 @@ export const LocaisEstoqueTable = ({
   )
 }
 
+export const CategoriasTable = ({
+  rows,
+  onEdit,
+  onDelete,
+}: {
+  rows: CategoriaRow[]
+  onEdit?: (row: CategoriaRow) => void
+  onDelete?: (row: CategoriaRow) => void
+}) => {
+  const columns = [
+    { label: '#', w: '60px' },
+    { label: 'Nome', w: '1fr' },
+    { label: 'Ações', w: '80px', align: 'center' as const },
+  ]
+
+  return (
+    <SimpleTable columns={columns}>
+      {rows.map((r) => (
+        <Box as="tr" key={r.id}>
+          <Box as="td" px={3} py={3} borderBottom="1px solid" borderColor="gray.100" fontSize="xs" color="gray.400">
+            {r.id}
+          </Box>
+          <Box as="td" px={3} py={3} borderBottom="1px solid" borderColor="gray.100" fontSize="xs" color="gray.700">
+            <TableCellTruncate maxW="600px" title={r.nome}>
+              {r.nome}
+            </TableCellTruncate>
+          </Box>
+          <Box as="td" px={3} py={3} borderBottom="1px solid" borderColor="gray.100" textAlign="center">
+            <MenuRoot positioning={{ placement: 'bottom-end' }}>
+              <MenuTrigger asChild>
+                <Button variant="ghost" size="sm" h="28px" w="28px" p={0} aria-label="Ações da categoria">
+                  <PencilIcon size={16} />
+                </Button>
+              </MenuTrigger>
+              <MenuContent>
+                <MenuItem value="edit" onClick={() => onEdit?.(r)}>
+                  Editar
+                </MenuItem>
+                <MenuItem value="delete" onClick={() => onDelete?.(r)} color="red.600">
+                  Excluir
+                </MenuItem>
+              </MenuContent>
+            </MenuRoot>
+          </Box>
+        </Box>
+      ))}
+    </SimpleTable>
+  )
+}

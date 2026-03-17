@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Box, Button, Flex, HStack, Image, Text, VStack } from '@chakra-ui/react'
-import logo from '../assets/logo.svg'
+import logo from '../assets/logo-bahia-brindes.svg'
 import { APP_MODULES, moduleFromPathname } from '../config/modules'
 import { useAuth } from '../context/useAuth'
 import { CheckIcon, ChevronDownIcon, GearIcon, ProfileIcon, UserCircleIcon } from './icons'
@@ -44,9 +44,20 @@ export const AppHeader = () => {
   return (
     <Box as="header" position="sticky" top={0} zIndex={10} w="full" bg="white" boxShadow={headerShadow}>
       <Flex h="72px" px={{ base: 4, md: 8 }} align="center" justify="space-between">
-        <HStack gap={3} align="center">
+        <Box
+          as="button"
+          onClick={() => navigate('/portal-interno')}
+          cursor="pointer"
+          display="flex"
+          alignItems="center"
+          _hover={{ opacity: 0.85 }}
+          transition="opacity 0.15s"
+          border="none"
+          bg="transparent"
+          p={0}
+        >
           <Image src={logo} alt="Bahia Brindes" h={{ base: '26px', md: '30px' }} />
-        </HStack>
+        </Box>
 
         <HStack gap={3} align="center">
           {/* Seletor de módulo */}
